@@ -16,6 +16,6 @@ void main()
 {
     gl_Position = projection * view * model * vec4(aPosition, 1.0);
     frag_texCoords = aTexCoords;
-    frag_normal = aNormal;
+    frag_normal = mat3(transpose(inverse(model))) * aNormal; // Adjusted line
     frag_pos = vec3(model * vec4(aPosition, 1.0));
 }

@@ -15,13 +15,13 @@ public class Camera
     private Vector3 front = -Vector3.UnitZ;
     private Vector3 right = Vector3.UnitY;
 
-    private float yaw = - (MathF.PI / 2);
+    private float yaw = 0f;
     private float pitch = 0f;
     
     private float aspectRatio = 1.33333333f;
     private float fov = (MathF.PI / 2);
 
-    private bool firstMouse;
+    private bool firstMouse = true;
 
     public Camera(IInputContext inputContext)
     {
@@ -49,14 +49,20 @@ public class Camera
         }
         
         // Handle mouse position
-        var mouseOffset = mouse.Position - this.previousMousePosition;
+        var mouseOffsetX = mouse.Position.X - this.previousMousePosition.X;
+        var mouseOffsetY = mouse.Position.Y - this.previousMousePosition.Y;
         this.previousMousePosition = mouse.Position;
 
-        var yawAdjust = mouseOffset.X * mouseSensitivity * (float)deltaTime;
-        var pitchAdjust = mouseOffset.Y * mouseSensitivity * (float)deltaTime;
-        this.AdjustLook(yawAdjust, pitchAdjust);
+        var yawAdjust = mouseOffsetX * mouseSensitivity * (float)deltaTime;
+        var pitchAdjust = -(mouseOffsetY * mouseSensitivity * (float)deltaTime);
+        this.AdjustViewDirection(yawAdjust, pitchAdjust);
         
         // Handle keyboard position
+        this.HandleInput(deltaTime, speed);
+    }
+
+    private void HandleInput(double deltaTime, int speed)
+    {
         var keyboard = this.inputContext.Keyboards[0];
 
         if (keyboard.IsKeyPressed(Key.Up) || keyboard.IsKeyPressed(Key.W))
@@ -89,12 +95,14 @@ public class Camera
             this.Position += Vector3.UnitY * (float)(deltaTime * speed);
         }
     }
-    private void AdjustLook(float yawAdjust, float pitchAdjust)
+
+    private void AdjustViewDirection(float yawAdjust, float pitchAdjust)
     {
         this.yaw += MathHelper.DegreesToRadians(yawAdjust);
-        pitchAdjust = MathHelper.Clamp(pitchAdjust, -89f, 89f);
         this.pitch += MathHelper.DegreesToRadians(pitchAdjust);
-        
+        const float pitchPadding = MathF.PI / 10;
+        this.pitch = MathHelper.Clamp(this.pitch, -(MathHelper.PiOver2 - pitchPadding), MathHelper.PiOver2 - pitchPadding);
+
         this.front.X = MathF.Cos(this.pitch) * MathF.Cos(this.yaw);
         this.front.Y = MathF.Sin(this.pitch);
         this.front.Z = MathF.Cos(this.pitch) * MathF.Sin(this.yaw);

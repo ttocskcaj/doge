@@ -26,7 +26,7 @@ internal static class Program
 
     private static List<GameObject> gameObjects = new();
     private static Lamp lamp = null!;
-    private static Vector3 lightSource = Vector3.Zero;
+    private static Vector3 lightSource = new (100f);
 
     private static int frameCount = 0;
     private static double fpsNextUpdate = 0.0;
@@ -94,17 +94,27 @@ internal static class Program
         camera.Resize(window.Size);
         renderer = new Renderer(gl, camera);
 
+        int startSize = 200;
+
         var random = new Random();
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 100; i++)
         {
             var doge = new DogeGameObject(gl, texture, shader)
             {
-                Transform = new Transform { Position = new Vector3(random.Next(-60, 60), random.Next(-60, 60), random.Next(-60, 60)) },
+                Transform = new Transform { Position = new Vector3(random.Next(-(startSize/2), (startSize/2)), random.Next(-(startSize/2), (startSize/2)), random.Next(-(startSize/2), (startSize/2))) },
             };
             
             gameObjects.Add(doge);
         }
 
+        var grumpyTexture = new Texture(gl, "grumpy.png");
+        var grumpy = new GrumpyGameObject(gl, grumpyTexture, shader)
+        {
+            Transform = new Transform { Position = new Vector3(random.Next(-(startSize/2), (startSize/2)), random.Next(-(startSize/2), (startSize/2)), random.Next(-(startSize/2), (startSize/2))) },
+        };
+        
+        gameObjects.Add(grumpy);
+        
         lamp = new Lamp(gl, lightSource);
 
         imGuiController = new ImGuiController(gl, window, input);

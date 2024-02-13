@@ -1,6 +1,5 @@
 ﻿namespace Silk.NET_Tutorials;
 
-using System.Drawing;
 using System.Numerics;
 using Silk.NET_Tutorials.Rendering;
 using Silk.NET.OpenGL;
@@ -33,6 +32,8 @@ public abstract class GameObject : IDisposable
     public Transform Transform { get; set; } = new Transform();
 
     public GL Gl { get; set; }
+    
+    public abstract Vector3 BackgroundColour { get; }
 
     public abstract void OnUpdate(double deltaTime, double gameTime);
 
@@ -49,6 +50,7 @@ public abstract class GameObject : IDisposable
         this.Shader.SetUniform("projection", camera.ProjectionMatrix);
         this.Shader.SetUniform("model", this.Transform.Matrix);
         this.Shader.SetUniform("lightColour", lamp.Colour);
+        this.Shader.SetUniform("backgroundColour", this.BackgroundColour);
         this.Shader.SetUniform("lightPos", lamp.LightPosition);
         this.Shader.SetUniform("viewPos", camera.Position);
     }

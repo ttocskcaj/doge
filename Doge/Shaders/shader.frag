@@ -8,6 +8,7 @@ out vec4 out_color;
 
 uniform sampler2D tex;
 uniform vec3 lightColour;
+uniform vec3 backgroundColour;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
@@ -15,9 +16,8 @@ void main()
 {
     // Get the texture color
     vec4 texColor = texture(tex, frag_texCoords);
-    vec4 premultipliedColor = vec4(texColor.rgb * texColor.a, texColor.a);
-    vec4 backgroundColor = vec4(0.8, 0.8, 0.8, 1.0);
-    vec4 objectColor = premultipliedColor + backgroundColor * (1.0 - premultipliedColor.a);
+    vec4 premultipliedColour = vec4(texColor.rgb * texColor.a, texColor.a);
+    vec4 objectColor = premultipliedColour + vec4(backgroundColour, 1.0) * (1.0 - premultipliedColour.a);
 
     // Ambient Lighting
     float ambientStrength = 0.145;
